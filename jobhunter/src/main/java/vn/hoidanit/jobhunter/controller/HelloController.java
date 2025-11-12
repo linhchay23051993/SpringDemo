@@ -10,9 +10,5 @@ public class HelloController {
     public String getHelloWorld() {
         return "Hello World (Hỏi Dân IT & Eric)";
     }
-    
-    @GetMapping("/")
-    public String HelloWorld() {
-        return "Hello World (Hỏi Dân IT & Eric)";
-    }
+ 
 }
