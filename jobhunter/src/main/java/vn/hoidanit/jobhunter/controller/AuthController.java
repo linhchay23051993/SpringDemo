@@ -28,7 +28,7 @@ public class AuthController {
 	public ResponseEntity<String> login(@Valid @RequestBody LoginDTO loginDTO) {
 		// Nạp input gồm username/password vào Security
 		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-				loginDTO.getUsername(), loginDTO.getPassword());
+				loginDTO.getName(), loginDTO.getPassword());
 
 		// xác thực người dùng => cần viết hàm loadUserByUsername
 		Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
