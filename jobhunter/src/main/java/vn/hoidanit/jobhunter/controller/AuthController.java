@@ -7,6 +7,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
@@ -14,6 +15,7 @@ import vn.hoidanit.jobhunter.domain.LoginDTO;
 import vn.hoidanit.jobhunter.util.SecurityUtil;
 
 @RestController
+@RequestMapping("/api/v1")
 public class AuthController {
 
 	private final AuthenticationManagerBuilder authenticationManagerBuilder;
