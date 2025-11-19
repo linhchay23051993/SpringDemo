@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.turkraft.springfilter.boot.Filter;
 
+import jakarta.validation.Valid;
 import vn.hoidanit.jobhunter.domain.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.domain.User;
 import vn.hoidanit.jobhunter.service.UserService;
@@ -35,7 +36,12 @@ public class UserController {
 	}
 
 	@PostMapping("/users")
-	public ResponseEntity<User> createUser(@RequestBody User postManUser) {
+	public ResponseEntity<User> createUser(@Valid @RequestBody User postManUser) throws IdInvalidException {
+		boolean isEmailExist = this.userService.isEmailExist(postManUser.getEmail());
+		if(isEmailExist) {
+			throw new IdInvalidException("Email "+ postManUser.getEmail()+ " da ton tai, vui long su dung email khac");
+		}
+		
 		String hashPassword = passwordEncoder.encode(postManUser.getPassword());
 		postManUser.setPassword(hashPassword);
 		User user = this.userService.handleCreateUser(postManUser);
