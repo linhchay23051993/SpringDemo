@@ -1,4 +1,6 @@
-package vn.hoidanit.jobhunter.domain;
+package vn.hoidanit.jobhunter.domain.dto;
+
+import vn.hoidanit.jobhunter.domain.Meta;
 
 public class ResultPaginationDTO {
 

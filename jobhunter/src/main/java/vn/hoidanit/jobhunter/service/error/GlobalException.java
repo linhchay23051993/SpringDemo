@@ -11,6 +11,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import vn.hoidanit.jobhunter.domain.RestResponse;
 
@@ -34,7 +35,15 @@ public class GlobalException {
 		res.setMessage("BadCredentialsException");
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
 	}
-
+	
+	@ExceptionHandler(value = { NoResourceFoundException.class })
+	public ResponseEntity<RestResponse<Object>> handleNoResourceFoundException(Exception ex) {
+		RestResponse<Object> res = new RestResponse<>();
+		res.setStatusCode(HttpStatus.NOT_FOUND.value());
+		res.setError(ex.getMessage());
+		res.setMessage("404 Not found, URL khong ton tai");
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+	}
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<RestResponse<Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
 		BindingResult result = ex.getBindingResult();

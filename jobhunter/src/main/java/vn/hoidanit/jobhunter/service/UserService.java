@@ -2,6 +2,7 @@ package vn.hoidanit.jobhunter.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,8 +10,11 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import vn.hoidanit.jobhunter.domain.Meta;
-import vn.hoidanit.jobhunter.domain.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.domain.User;
+import vn.hoidanit.jobhunter.domain.dto.ResCreateUserDto;
+import vn.hoidanit.jobhunter.domain.dto.ResUpdateUserDto;
+import vn.hoidanit.jobhunter.domain.dto.ResUserDto;
+import vn.hoidanit.jobhunter.domain.dto.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.repository.UserRepository;
 
 @Service
@@ -48,7 +52,19 @@ public class UserService {
 		mt.setTotal(pageUser.getTotalElements());
 		
 		rs.setMeta(mt);
-		rs.setResult(pageUser.getContent());
+		List<ResUserDto> listUser = pageUser.getContent()
+				.stream().map(item -> new ResUserDto(
+						item.getId(),
+						item.getEmail(),
+						item.getName(),
+						item.getGender(),
+						item.getAddress(),
+						item.getAge(),
+						item.getUpdatedAt(),
+						item.getCreatedAt()
+						))
+				.collect(Collectors.toList());
+		rs.setResult(listUser);
 		
 		return rs;
 	}
@@ -56,13 +72,16 @@ public class UserService {
 	public User handleUpdateUSer(User reqUser) {
 		User currentUser = this.fetchUserById(reqUser.getId());
 		if (currentUser!= null) {
-			currentUser.setEmail(reqUser.getEmail());
+			currentUser.setAddress(reqUser.getAddress());	
+			currentUser.setGender(reqUser.getGender());
+			currentUser.setAge(reqUser.getAge());
 			currentUser.setName(reqUser.getName());
-			currentUser.setPassword(reqUser.getPassword());
 			
 			currentUser = this.userRepository.save(currentUser);
+			return currentUser;
+
 		}
-		return currentUser;
+		return null;
 	}
 	
 	public User handleGetUserByEmail(String email) {
@@ -70,6 +89,40 @@ public class UserService {
 	}
 	
 	public boolean isEmailExist(String email) {
-		return this.userRepository.existByEmail(email);
+		return this.userRepository.existsByEmail(email);
+	}
+	
+	public ResCreateUserDto convertToResCreateUserDto(User user) {
+		ResCreateUserDto res = new ResCreateUserDto();
+		res.setId(user.getId());
+		res.setEmail(user.getEmail());
+		res.setName(user.getName());
+		res.setAge(user.getAge());
+		res.setCreatedAt(user.getCreatedAt());
+		res.setGender(user.getGender());
+		res.setAddress(user.getAddress());
+		return res;
+	}
+	public ResUserDto convertToResUserDto(User user) {
+		ResUserDto res = new ResUserDto();
+		res.setId(user.getId());
+		res.setEmail(user.getEmail());
+		res.setName(user.getName());
+		res.setAge(user.getAge());
+		res.setCreatedAt(user.getCreatedAt());
+		res.setUpdatedAt(user.getUpdatedAt());
+		res.setGender(user.getGender());
+		res.setAddress(user.getAddress());
+		return res;
+	}
+	public ResUpdateUserDto convertToResUpdateUserDto(User user) {
+		ResUpdateUserDto res = new ResUpdateUserDto();
+		res.setId(user.getId());
+		res.setName(user.getName());
+		res.setAge(user.getAge());
+		res.setUpdatedAt(user.getUpdatedAt());
+		res.setGender(user.getGender());
+		res.setAddress(user.getAddress());
+		return res;
 	}
 }
