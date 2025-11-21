@@ -20,14 +20,20 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
+import vn.hoidanit.jobhunter.domain.dto.ResLoginDto;
+
 @Service
 public class SecurityUtil {
 	private final JwtEncoder encoder;
 	@Value("${hoidanit.jwt.base64-secret}")
 	private String jwtKey;
 
-	@Value("${hoidanit.jwt.token-validity-in-seconds}")
-	private long jwtExpiration;
+	@Value("${hoidanit.jwt.access-token-validity-in-seconds}")
+	private long accessTokenExpiration;
+	
+	@Value("${hoidanit.jwt.refresh-token-validity-in-seconds}")
+	private long refreshTokenExpiration;
+	
 	public static final MacAlgorithm JWT_ALGORITHM = MacAlgorithm.HS512;
 
 	public SecurityUtil(JwtEncoder encoder) {
@@ -35,10 +41,10 @@ public class SecurityUtil {
 		this.encoder = encoder;
 	}
 
-	public String createToken(Authentication authentication) {
+	public String createAccessToken(Authentication authentication) {
 
 		Instant now = Instant.now();
-		Instant validity = now.plus(jwtExpiration, ChronoUnit.SECONDS);
+		Instant validity = now.plus(accessTokenExpiration, ChronoUnit.SECONDS);
 
 		// @formatter:off
         JwtClaimsSet claims = JwtClaimsSet.builder()
@@ -46,6 +52,23 @@ public class SecurityUtil {
             .expiresAt(validity)
             .subject(authentication.getName())
             .claim("hoidanit", authentication)
+            .build();
+
+        JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();
+        return this.encoder.encode(JwtEncoderParameters.from(jwsHeader, claims)).getTokenValue();
+
+	}
+	public String createRefreshToken(String email, ResLoginDto dto) {
+
+		Instant now = Instant.now();
+		Instant validity = now.plus(refreshTokenExpiration, ChronoUnit.SECONDS);
+
+		// @formatter:off
+        JwtClaimsSet claims = JwtClaimsSet.builder()
+            .issuedAt(now)
+            .expiresAt(validity)
+            .subject(email)
+            .claim("user", dto.getUser())
             .build();
 
         JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();
