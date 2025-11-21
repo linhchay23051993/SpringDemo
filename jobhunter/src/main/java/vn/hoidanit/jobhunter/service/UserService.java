@@ -32,7 +32,7 @@ public class UserService {
 	public void handleDeleteUser(Long id) {
 		this.userRepository.deleteById(id);
 	}
-	
+
 	public User fetchUserById(long id) {
 		Optional<User> userOptional = this.userRepository.findById(id);
 		if (userOptional.isPresent()) {
@@ -40,58 +40,50 @@ public class UserService {
 		}
 		return null;
 	}
-	
-	public ResultPaginationDTO fetchAllUser(Specification<User> spec, Pageable pageable){
+
+	public ResultPaginationDTO fetchAllUser(Specification<User> spec, Pageable pageable) {
 		Page<User> pageUser = this.userRepository.findAll(spec, pageable);
-		ResultPaginationDTO rs =  new ResultPaginationDTO();
+		ResultPaginationDTO rs = new ResultPaginationDTO();
 		Meta mt = new Meta();
-		
-		mt.setPage( pageable.getPageNumber()+1);
+
+		mt.setPage(pageable.getPageNumber() + 1);
 		mt.setPageSize(pageable.getPageSize());
 		mt.setPages(pageUser.getTotalPages());
 		mt.setTotal(pageUser.getTotalElements());
-		
+
 		rs.setMeta(mt);
-		List<ResUserDto> listUser = pageUser.getContent()
-				.stream().map(item -> new ResUserDto(
-						item.getId(),
-						item.getEmail(),
-						item.getName(),
-						item.getGender(),
-						item.getAddress(),
-						item.getAge(),
-						item.getUpdatedAt(),
-						item.getCreatedAt()
-						))
+		List<ResUserDto> listUser = pageUser.getContent().stream()
+				.map(item -> new ResUserDto(item.getId(), item.getEmail(), item.getName(), item.getGender(),
+						item.getAddress(), item.getAge(), item.getUpdatedAt(), item.getCreatedAt()))
 				.collect(Collectors.toList());
 		rs.setResult(listUser);
-		
+
 		return rs;
 	}
-	
+
 	public User handleUpdateUSer(User reqUser) {
 		User currentUser = this.fetchUserById(reqUser.getId());
-		if (currentUser!= null) {
-			currentUser.setAddress(reqUser.getAddress());	
+		if (currentUser != null) {
+			currentUser.setAddress(reqUser.getAddress());
 			currentUser.setGender(reqUser.getGender());
 			currentUser.setAge(reqUser.getAge());
 			currentUser.setName(reqUser.getName());
-			
+
 			currentUser = this.userRepository.save(currentUser);
 			return currentUser;
 
 		}
 		return null;
 	}
-	
+
 	public User handleGetUserByEmail(String email) {
 		return userRepository.findByEmail(email);
 	}
-	
+
 	public boolean isEmailExist(String email) {
 		return this.userRepository.existsByEmail(email);
 	}
-	
+
 	public ResCreateUserDto convertToResCreateUserDto(User user) {
 		ResCreateUserDto res = new ResCreateUserDto();
 		res.setId(user.getId());
@@ -103,6 +95,7 @@ public class UserService {
 		res.setAddress(user.getAddress());
 		return res;
 	}
+
 	public ResUserDto convertToResUserDto(User user) {
 		ResUserDto res = new ResUserDto();
 		res.setId(user.getId());
@@ -115,6 +108,7 @@ public class UserService {
 		res.setAddress(user.getAddress());
 		return res;
 	}
+
 	public ResUpdateUserDto convertToResUpdateUserDto(User user) {
 		ResUpdateUserDto res = new ResUpdateUserDto();
 		res.setId(user.getId());
@@ -125,13 +119,17 @@ public class UserService {
 		res.setAddress(user.getAddress());
 		return res;
 	}
-	
+
 	public void updateUserToken(String token, String email) {
 		User currentUser = this.userRepository.findByEmail(email);
-		if(currentUser != null) {
+		if (currentUser != null) {
 			currentUser.setRefreshToken(token);
 			this.userRepository.save(currentUser);
 		}
 	}
-	
+
+	public User getUsetByRefreshTokenAndEmail(String token, String email) {
+		return this.userRepository.findByRefreshTokenAndEmail(token, email);
+	}
+
 }

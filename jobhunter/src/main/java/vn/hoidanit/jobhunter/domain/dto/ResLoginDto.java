@@ -53,7 +53,9 @@ public class ResLoginDto {
 			this.email = email;
 			this.name = name;
 		}
-		
+		public UserLogin() {
+			
+		}
 		
 
 	}
