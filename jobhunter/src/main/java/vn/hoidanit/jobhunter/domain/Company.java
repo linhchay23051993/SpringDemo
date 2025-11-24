@@ -2,7 +2,6 @@ package vn.hoidanit.jobhunter.domain;
 
 import java.time.Instant;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -31,12 +30,12 @@ public class Company {
 	
 	private String address;
 	private String logo;
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss a", timezone = "GMT+7")
+//	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss a", timezone = "GMT+7")
 	private Instant createdAt;
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss a", timezone = "GMT+7")
-	private Instant updateAt;
-	private String createBy;
-	private String updateBy;
+//	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss a", timezone = "GMT+7")
+	private Instant updatedAt;
+	private String createdBy;
+	private String updatedBy;
 	
 	public long getId() {
 		return id;
@@ -86,33 +85,33 @@ public class Company {
 		this.createdAt = createdAt;
 	}
 
-	public Instant getUpdateAt() {
-		return updateAt;
+	public Instant getUpdatedAt() {
+		return updatedAt;
 	}
 
-	public void setUpdateAt(Instant updateAt) {
-		this.updateAt = updateAt;
+	public void setUpdatedAt(Instant updateAt) {
+		this.updatedAt = updateAt;
 	}
 
-	public String getCreateBy() {
-		return createBy;
+	public String getCreatedBy() {
+		return createdBy;
 	}
 
-	public void setCreateBy(String createBy) {
-		this.createBy = createBy;
+	public void setCreatedBy(String createBy) {
+		this.createdBy = createBy;
 	}
 
-	public String getUpdateBy() {
-		return updateBy;
+	public String getUpdatedBy() {
+		return updatedBy;
 	}
 
-	public void setUpdateBy(String updateBy) {
-		this.updateBy = updateBy;
+	public void setUpdatedBy(String updateBy) {
+		this.updatedBy = updateBy;
 	}
 
 	@PrePersist
 	public void handleBeforeCreate() {
-		this.createBy = SecurityUtil.getCurrentUserLogin().isPresent() == true 
+		this.createdBy = SecurityUtil.getCurrentUserLogin().isPresent() == true 
 				? SecurityUtil.getCurrentUserLogin().get()
 						: "";
 		this.createdAt = Instant.now();
@@ -120,10 +119,10 @@ public class Company {
 	
 	@PreUpdate
 	public void handleBeforeUpdate() {
-		this.updateBy = SecurityUtil.getCurrentUserLogin().isPresent() == true
+		this.updatedBy = SecurityUtil.getCurrentUserLogin().isPresent() == true
 				? SecurityUtil.getCurrentUserLogin().get()
 						: "";
-		this.updateAt = Instant.now();
+		this.updatedAt = Instant.now();
 	}
 	
 }

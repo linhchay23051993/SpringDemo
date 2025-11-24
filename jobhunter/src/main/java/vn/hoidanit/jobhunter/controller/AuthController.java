@@ -48,7 +48,7 @@ public class AuthController {
 	public ResponseEntity<ResLoginDto> login(@Valid @RequestBody LoginDTO loginDTO) {
 		// Nạp input gồm username/password vào Security
 		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-				loginDTO.getName(), loginDTO.getPassword());
+				loginDTO.getUsername(), loginDTO.getPassword());
 
 		// xác thực người dùng => cần viết hàm loadUserByUsername
 		Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
@@ -56,16 +56,16 @@ public class AuthController {
 		// set thong tin nguoi dung dang nhap vao context (co the su dung sau nay)
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		ResLoginDto res = new ResLoginDto();
-		User currentUser = this.userService.handleGetUserByEmail(loginDTO.getName());
+		User currentUser = this.userService.handleGetUserByEmail(loginDTO.getUsername());
 		ResLoginDto.UserLogin userLogin = new ResLoginDto.UserLogin(currentUser.getId(), currentUser.getEmail(),
 				currentUser.getName());
 		res.setUser(userLogin);
 		String access_token = securityUtil.createAccessToken(authenticationToken.getName(), userLogin);
 		res.setAccessToken(access_token);
 		// create Refresh token
-		String refreshToken = this.securityUtil.createRefreshToken(loginDTO.getName(), res);
+		String refreshToken = this.securityUtil.createRefreshToken(loginDTO.getUsername(), res);
 		// update user
-		this.userService.updateUserToken(refreshToken, loginDTO.getName());
+		this.userService.updateUserToken(refreshToken, loginDTO.getUsername());
 		// set cookie
 		ResponseCookie resCookies = ResponseCookie.from("refresh_token", refreshToken).httpOnly(true).secure(true)
 				.path("/").maxAge(refreshTokenExpiration).build();
@@ -75,15 +75,17 @@ public class AuthController {
 
 	@GetMapping("/auth/account")
 	@ApiMessage("Get account")
-	public ResponseEntity<UserLogin> getAccount() {
+	public ResponseEntity<ResLoginDto.UserGetAccount> getAccount() {
 		String email = SecurityUtil.getCurrentUserLogin().isPresent() ? SecurityUtil.getCurrentUserLogin().get() : "";
 		User currentUser = this.userService.handleGetUserByEmail(email);
 		ResLoginDto.UserLogin userLogin = new ResLoginDto.UserLogin();
+		ResLoginDto.UserGetAccount userGetAccount = new ResLoginDto.UserGetAccount();
 		userLogin.setId(currentUser.getId());
 		userLogin.setEmail(currentUser.getEmail());
-		userLogin.setName(currentUser.getName());
+		userLogin.setUserName(currentUser.getName());
+		userGetAccount.setUser(userLogin);
 
-		return ResponseEntity.ok(userLogin);
+		return ResponseEntity.ok(userGetAccount);
 	}
 
 	@GetMapping("/auth/refresh")
