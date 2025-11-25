@@ -24,7 +24,7 @@ import com.turkraft.springfilter.boot.Filter;
 import jakarta.validation.Valid;
 import vn.hoidanit.jobhunter.domain.Company;
 import vn.hoidanit.jobhunter.domain.User;
-import vn.hoidanit.jobhunter.domain.dto.ResultPaginationDTO;
+import vn.hoidanit.jobhunter.domain.response.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.service.CompanyService;
 
 @RestController
@@ -36,27 +36,27 @@ public class CompanyController {
 	public CompanyController(CompanyService companyService) {
 		this.companyService = companyService;
 	}
-	
+
 	@PostMapping("/companies")
-	public ResponseEntity<?> createCompany(@Valid @RequestBody Company comapy){
+	public ResponseEntity<?> createCompany(@Valid @RequestBody Company comapy) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(companyService.handleCreateCompany(comapy));
 	}
-	
+
 	@GetMapping("/companies")
-	public ResponseEntity<ResultPaginationDTO>  getCompany(
+	public ResponseEntity<ResultPaginationDTO> getCompany(
 			@Filter Specification<Company> spec,
 			Pageable pageable) {
-		
+
 		return ResponseEntity.status(HttpStatus.OK).body(this.companyService.handleGetCompany(spec, pageable));
 	}
-	
+
 	@PutMapping("/companies")
-	public ResponseEntity<Company> updateCompany(@Valid @RequestBody Company comapy){
+	public ResponseEntity<Company> updateCompany(@Valid @RequestBody Company comapy) {
 		return ResponseEntity.ok(companyService.handleUpdateCompany(comapy));
 	}
-	
+
 	@DeleteMapping("/companies/{id}")
-	public ResponseEntity<Void> deleteCompany(@PathVariable("id") long id){
+	public ResponseEntity<Void> deleteCompany(@PathVariable("id") long id) {
 		this.companyService.handleDeleteCompany(id);
 		return ResponseEntity.ok(null);
 	}

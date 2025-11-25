@@ -28,37 +28,37 @@ import org.springframework.stereotype.Service;
 
 import com.nimbusds.jose.util.Base64;
 
-import vn.hoidanit.jobhunter.domain.dto.ResLoginDto;
+import vn.hoidanit.jobhunter.domain.response.ResLoginDto;
 
 @Service
 public class SecurityUtil {
-	private final JwtEncoder encoder;
-	@Value("${hoidanit.jwt.base64-secret}")
-	private String jwtKey;
+    private final JwtEncoder encoder;
+    @Value("${hoidanit.jwt.base64-secret}")
+    private String jwtKey;
 
-	@Value("${hoidanit.jwt.access-token-validity-in-seconds}")
-	private long accessTokenExpiration;
+    @Value("${hoidanit.jwt.access-token-validity-in-seconds}")
+    private long accessTokenExpiration;
 
-	@Value("${hoidanit.jwt.refresh-token-validity-in-seconds}")
-	private long refreshTokenExpiration;
+    @Value("${hoidanit.jwt.refresh-token-validity-in-seconds}")
+    private long refreshTokenExpiration;
 
-	public static final MacAlgorithm JWT_ALGORITHM = MacAlgorithm.HS512;
+    public static final MacAlgorithm JWT_ALGORITHM = MacAlgorithm.HS512;
 
-	public SecurityUtil(JwtEncoder encoder) {
-		super();
-		this.encoder = encoder;
-	}
+    public SecurityUtil(JwtEncoder encoder) {
+        super();
+        this.encoder = encoder;
+    }
 
-	public String createAccessToken(String email, ResLoginDto.UserLogin dto) {
+    public String createAccessToken(String email, ResLoginDto.UserLogin dto) {
 
-		Instant now = Instant.now();
-		Instant validity = now.plus(accessTokenExpiration, ChronoUnit.SECONDS);
-		// hardcode permission for testing
-		List<String> listAuthority = new ArrayList<>();
-		listAuthority.add("ROLE_USER_CREATE");
-		listAuthority.add("ROLE_USER_UPDATE");
+        Instant now = Instant.now();
+        Instant validity = now.plus(accessTokenExpiration, ChronoUnit.SECONDS);
+        // hardcode permission for testing
+        List<String> listAuthority = new ArrayList<>();
+        listAuthority.add("ROLE_USER_CREATE");
+        listAuthority.add("ROLE_USER_UPDATE");
 
-		// @formatter:off
+        // @formatter:off
         JwtClaimsSet claims = JwtClaimsSet.builder()
             .issuedAt(now)
             .expiresAt(validity)
