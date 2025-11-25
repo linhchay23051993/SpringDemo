@@ -14,7 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import vn.hoidanit.jobhunter.domain.RestResponse;
+import vn.hoidanit.jobhunter.domain.response.RestResponse;
 
 @Component
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
@@ -36,12 +36,11 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 		RestResponse<Object> res = new RestResponse<>();
 		res.setStatusCode(HttpStatus.UNAUTHORIZED.value());
 		String errorMessage = Optional.ofNullable(authException.getCause())
-				.map(Throwable:: getMessage)
+				.map(Throwable::getMessage)
 				.orElse(authException.getMessage());
-		
+
 		res.setError(errorMessage);
-		
-		
+
 		res.setMessage("Token khong hop le (het han, khong dung dinhd dang)");
 
 		mapper.writeValue(response.getWriter(), res);
