@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import vn.hoidanit.jobhunter.domain.User;
-import vn.hoidanit.jobhunter.domain.dto.LoginDTO;
+import vn.hoidanit.jobhunter.domain.dto.ReqLoginDTO;
 import vn.hoidanit.jobhunter.domain.dto.ResLoginDto;
 import vn.hoidanit.jobhunter.domain.dto.ResLoginDto.UserLogin;
 import vn.hoidanit.jobhunter.service.UserService;
@@ -45,7 +45,7 @@ public class AuthController {
 	}
 
 	@PostMapping("/auth/login")
-	public ResponseEntity<ResLoginDto> login(@Valid @RequestBody LoginDTO loginDTO) {
+	public ResponseEntity<ResLoginDto> login(@Valid @RequestBody ReqLoginDTO loginDTO) {
 		// Nạp input gồm username/password vào Security
 		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
 				loginDTO.getUsername(), loginDTO.getPassword());
@@ -91,17 +91,17 @@ public class AuthController {
 	@GetMapping("/auth/refresh")
 	@ApiMessage("Get User by refresh token")
 	public ResponseEntity<ResLoginDto> getRefreshToken(
-			@CookieValue(name = "refresh_token",defaultValue = "abc") String refresh_token) throws IdInvalidException {
-		if(refresh_token.equals("abc")) {
+			@CookieValue(name = "refresh_token", defaultValue = "abc") String refresh_token) throws IdInvalidException {
+		if (refresh_token.equals("abc")) {
 			throw new IdInvalidException("Ban khong co refresh token");
 		}
 		// check valid
 		Jwt decodedToken = this.securityUtil.checkValidRefreshToken(refresh_token);
 		String email = decodedToken.getSubject();
-	
+
 		// check refresh token va email
 		User currentUser = this.userService.getUsetByRefreshTokenAndEmail(refresh_token, email);
-		if(currentUser == null) {
+		if (currentUser == null) {
 			throw new IdInvalidException("Token khong hop le");
 		}
 		// issue new token/set Refresh token as Cookies
@@ -122,10 +122,10 @@ public class AuthController {
 
 		return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, resCookies.toString()).body(res);
 	}
+
 	@PostMapping("/auth/logout")
-	public ResponseEntity<Void> logout(){
-		String email = SecurityUtil.getCurrentUserLogin().isPresent() ?
-				SecurityUtil.getCurrentUserLogin().get() : "";
+	public ResponseEntity<Void> logout() {
+		String email = SecurityUtil.getCurrentUserLogin().isPresent() ? SecurityUtil.getCurrentUserLogin().get() : "";
 		// update refresh token == null
 		this.userService.updateUserToken(null, email);
 		// set cookie
