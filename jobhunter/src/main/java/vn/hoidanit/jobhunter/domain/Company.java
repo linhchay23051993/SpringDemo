@@ -42,6 +42,9 @@ public class Company {
 	@OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
 	@JsonIgnore
 	List<User> users;
+	@OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
+	@JsonIgnore
+	List<Job> jobs;
 
 	public List<User> getUsers() {
 		return users;
