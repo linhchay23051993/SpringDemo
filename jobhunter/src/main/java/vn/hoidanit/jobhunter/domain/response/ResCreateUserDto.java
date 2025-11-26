@@ -12,6 +12,15 @@ public class ResCreateUserDto {
 	private int age;
 	private String address;
 	private Instant createdAt;
+	private CompanyUser company;
+
+	public CompanyUser getCompany() {
+		return company;
+	}
+
+	public void setCompany(CompanyUser company) {
+		this.company = company;
+	}
 
 	public int getAge() {
 		return age;
@@ -67,6 +76,27 @@ public class ResCreateUserDto {
 
 	public void setCreatedAt(Instant createdAt) {
 		this.createdAt = createdAt;
+	}
+
+	public static class CompanyUser {
+		private long id;
+		private String name;
+
+		public long getId() {
+			return id;
+		}
+
+		public void setId(long id) {
+			this.id = id;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
 	}
 
 }
